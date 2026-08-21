@@ -54,8 +54,9 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
     --bg: #fff8f2;
     --card: #ffffff;
     --fg: #3d2c1e;
-    --muted: #8a6f5c;
+    --muted: #7a604d;
     --accent: #ea580c;
+    --accent-text: #c2410c;
     --accent-contrast: #ffffff;
     --accent-soft: #ffedd5;
     --border: #f0dfce;
@@ -70,6 +71,7 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
       --fg: #f5ebdd;
       --muted: #b99c86;
       --accent: #fb923c;
+      --accent-text: #fdba74;
       --accent-contrast: #201612;
       --accent-soft: #38251a;
       --border: #40302a;
@@ -141,8 +143,8 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
     display: inline-block;
     min-height: 44px;
     padding: 0.5rem 1rem;
-    background: var(--accent);
-    color: var(--accent-contrast);
+    background: var(--accent-soft);
+    color: var(--accent-text);
     font-weight: 600;
     border: none;
     border-radius: 999px;
@@ -188,7 +190,7 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
 
   tbody td {
     font-weight: 700;
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   tbody tr:hover {
