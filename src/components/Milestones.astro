@@ -1,0 +1,38 @@
+---
+import { getCopy, type Language } from '../i18n/ui';
+import { formatHumanYears, humanAge } from '../lib/dogAge';
+
+type Props = { lang: Language };
+
+const { lang } = Astro.props;
+const c = getCopy(lang);
+
+const DOG_AGES = [0.15, 1, 2, 4, 7, 12, 16] as const;
+const rows = DOG_AGES.map((age, i) => ({
+  label: c.milestoneLabels[i],
+  human: formatHumanYears(humanAge(age)),
+}));
+---
+
+<section aria-labelledby="milestones-heading">
+  <h2 id="milestones-heading">{c.milestonesHeading}</h2>
+  <p>{c.milestonesLead}</p>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">{c.tableColDog}</th>
+        <th scope="col">{c.tableColHuman}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((row) => (
+          <tr>
+            <th scope="row">{row.label}</th>
+            <td>~{row.human}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</section>

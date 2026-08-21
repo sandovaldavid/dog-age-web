@@ -1,0 +1,188 @@
+---
+import { getCopy, type Language } from '../i18n/ui';
+
+type Props = { lang: Language };
+
+const { lang } = Astro.props;
+const c = getCopy(lang);
+---
+
+<section class="calculator card" aria-labelledby="calc-heading">
+  <h2 id="calc-heading">{c.calculatorHeading}</h2>
+  <form
+    class="dog-age-form"
+    novalidate
+    data-msg-error-empty={c.msgErrorEmpty}
+    data-msg-error-invalid={c.msgErrorInvalid}
+    data-msg-error-too-young={c.msgErrorTooYoung}
+    data-msg-beyond-study={c.msgBeyondStudy}
+    data-result-unit={c.resultUnit}
+    data-stage-puppy={c.stages.puppy}
+    data-stage-young-adult={c.stages.youngAdult}
+    data-stage-mature-adult={c.stages.matureAdult}
+    data-stage-senior={c.stages.senior}
+  >
+    <div class="fields">
+      <label>
+        <span>{c.labelYears}</span>
+        <input
+          type="number"
+          name="years"
+          min="0"
+          max="30"
+          step="1"
+          inputmode="numeric"
+          autocomplete="off"
+        />
+      </label>
+      <label>
+        <span>{c.labelMonths}</span>
+        <input
+          type="number"
+          name="months"
+          min="0"
+          max="11"
+          step="1"
+          inputmode="numeric"
+          autocomplete="off"
+        />
+      </label>
+    </div>
+    <p class="form-error" role="alert" hidden></p>
+  </form>
+  <div class="result" aria-live="polite" hidden>
+    <p class="human-age">~<span class="value"></span></p>
+    <p class="unit"></p>
+    <p class="stage"></p>
+    <p class="beyond-warning" hidden></p>
+  </div>
+  <noscript>
+    <p>{c.noscript}</p>
+  </noscript>
+  <p class="stages-note">{c.stagesNote}</p>
+</section>
+
+<script>
+  import { calcDogAge, formatHumanYears, lifeStage } from '../lib/dogAge';
+  const ERROR_ATTR: Record<string, string> = {
+    errorEmpty: 'data-msg-error-empty',
+    errorInvalid: 'data-msg-error-invalid',
+    errorTooYoung: 'data-msg-error-too-young',
+  };
+  const STAGE_ATTR: Record<string, string> = {
+    puppy: 'data-stage-puppy',
+    youngAdult: 'data-stage-young-adult',
+    matureAdult: 'data-stage-mature-adult',
+    senior: 'data-stage-senior',
+  };
+  document.querySelectorAll<HTMLFormElement>('form.dog-age-form').forEach((form) => {
+    const errorEl = form.querySelector<HTMLElement>('.form-error');
+    const result = form.parentElement?.querySelector<HTMLElement>('.result');
+    if (!errorEl || !result) return;
+    const valueEl = result.querySelector<HTMLElement>('.value');
+    const unitEl = result.querySelector<HTMLElement>('.unit');
+    const stageEl = result.querySelector<HTMLElement>('.stage');
+    const beyondEl = result.querySelector<HTMLElement>('.beyond-warning');
+    const update = () => {
+      const yearsEl = form.elements.namedItem('years') as HTMLInputElement | null;
+      const monthsEl = form.elements.namedItem('months') as HTMLInputElement | null;
+      if (!yearsEl || !monthsEl) return;
+      const outcome = calcDogAge(yearsEl.value, monthsEl.value);
+      if (!outcome.ok) {
+        errorEl.textContent = form.getAttribute(ERROR_ATTR[outcome.error]) ?? '';
+        errorEl.hidden = false;
+        result.hidden = true;
+        return;
+      }
+      errorEl.hidden = true;
+      result.hidden = false;
+      if (valueEl) valueEl.textContent = formatHumanYears(outcome.humanYears);
+      if (unitEl) unitEl.textContent = form.dataset.resultUnit ?? '';
+      if (stageEl) stageEl.textContent = form.getAttribute(STAGE_ATTR[lifeStage(outcome.humanYears)]) ?? '';
+      if (beyondEl) {
+        beyondEl.textContent = form.dataset.msgBeyondStudy ?? '';
+        beyondEl.hidden = !outcome.beyondStudyRange;
+      }
+    };
+    form.addEventListener('input', update);
+  });
+</script>
+
+<style>
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-block: 2rem;
+  }
+
+  .fields {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  label {
+    display: grid;
+    gap: 0.35rem;
+    font-weight: 600;
+  }
+
+  input[type='number'] {
+    font: inherit;
+    min-height: 44px;
+    width: 7rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    color: inherit;
+    background: var(--bg);
+  }
+
+  .form-error {
+    color: #b91c1c;
+    font-weight: bold;
+    margin-bottom: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .form-error {
+      color: #fca5a5;
+    }
+  }
+
+  .human-age {
+    font-size: clamp(2.5rem, 8vw, 4rem);
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .unit {
+    color: var(--muted);
+    margin-top: 0;
+  }
+
+  .stage {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    font-weight: bold;
+  }
+
+  .beyond-warning {
+    background: var(--warn-bg);
+    color: var(--warn-fg);
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.5rem;
+  }
+
+  .stages-note {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 0;
+  }
+</style>

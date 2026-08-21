@@ -1,0 +1,48 @@
+---
+import { getCopy, type Language } from '../i18n/ui';
+import Calculator from './Calculator.astro';
+import Milestones from './Milestones.astro';
+
+type Props = { lang: Language };
+
+const { lang } = Astro.props;
+const c = getCopy(lang);
+---
+
+<section class="hero">
+  <h1>{c.heroTitle}</h1>
+  <p class="hero-lead">{c.heroLead}</p>
+</section>
+<Calculator lang={lang} />
+<Milestones lang={lang} />
+<section aria-labelledby="how-heading">
+  <h2 id="how-heading">{c.howHeading}</h2>
+  <p><code class="formula">{c.formulaText}</code></p>
+  {c.methodParagraphs.map((paragraph) => <p>{paragraph}</p>)}
+</section>
+
+<style>
+  .hero {
+    padding-block: 2rem 0;
+  }
+
+  h1 {
+    font-size: clamp(1.75rem, 5vw, 2.75rem);
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-lead {
+    font-size: 1.1rem;
+    max-width: 44rem;
+  }
+
+  .formula {
+    display: inline-block;
+    font-size: 1.15rem;
+    font-weight: bold;
+    border: 1px dashed var(--border);
+    border-radius: 0.5rem;
+    background: var(--card);
+    padding: 0.25rem 0.6rem;
+  }
+</style>
