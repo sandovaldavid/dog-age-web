@@ -66,7 +66,7 @@ const en = {
 // ponytail: no `as const` here — it would turn EN values into literal types and
 // make `const es: typeof en` unassignable for translated strings. Plain typing
 // still enforces full key/value-shape parity via astro check; label counts are
-// asserted in dogAge.i18n.test.ts.
+// asserted in src/i18n/ui.test.ts.
 
 const es: typeof en = {
   htmlLang: 'es',
