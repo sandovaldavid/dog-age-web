@@ -1,5 +1,5 @@
 ---
-import { getCopy, type Language } from '../i18n/ui';
+import { getCopy, type Language } from '@/i18n/ui';
 
 type Props = { lang: Language };
 
@@ -63,7 +63,7 @@ const c = getCopy(lang);
 </section>
 
 <script>
-  import { calcDogAge, formatHumanYears, lifeStage, type CalcError, type LifeStage } from '../lib/dogAge';
+  import { calcDogAge, formatHumanYears, lifeStage, type CalcError, type LifeStage } from '@/lib/dogAge';
   const ERROR_ATTR: Record<CalcError, string> = {
     errorEmpty: 'data-msg-error-empty',
     errorInvalid: 'data-msg-error-invalid',
