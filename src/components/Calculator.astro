@@ -63,13 +63,13 @@ const c = getCopy(lang);
 </section>
 
 <script>
-  import { calcDogAge, formatHumanYears, lifeStage } from '../lib/dogAge';
-  const ERROR_ATTR: Record<string, string> = {
+  import { calcDogAge, formatHumanYears, lifeStage, type CalcError, type LifeStage } from '../lib/dogAge';
+  const ERROR_ATTR: Record<CalcError, string> = {
     errorEmpty: 'data-msg-error-empty',
     errorInvalid: 'data-msg-error-invalid',
     errorTooYoung: 'data-msg-error-too-young',
   };
-  const STAGE_ATTR: Record<string, string> = {
+  const STAGE_ATTR: Record<LifeStage, string> = {
     puppy: 'data-stage-puppy',
     youngAdult: 'data-stage-young-adult',
     matureAdult: 'data-stage-mature-adult',
@@ -89,8 +89,8 @@ const c = getCopy(lang);
       if (!yearsEl || !monthsEl) return;
       const outcome = calcDogAge(yearsEl.value, monthsEl.value);
       if (!outcome.ok) {
-        errorEl.textContent = form.getAttribute(ERROR_ATTR[outcome.error]) ?? '';
         errorEl.hidden = false;
+        errorEl.textContent = form.getAttribute(ERROR_ATTR[outcome.error]) ?? '';
         result.hidden = true;
         return;
       }
@@ -100,11 +100,12 @@ const c = getCopy(lang);
       if (unitEl) unitEl.textContent = form.dataset.resultUnit ?? '';
       if (stageEl) stageEl.textContent = form.getAttribute(STAGE_ATTR[lifeStage(outcome.humanYears)]) ?? '';
       if (beyondEl) {
-        beyondEl.textContent = form.dataset.msgBeyondStudy ?? '';
         beyondEl.hidden = !outcome.beyondStudyRange;
+        beyondEl.textContent = form.dataset.msgBeyondStudy ?? '';
       }
     };
     form.addEventListener('input', update);
+    form.addEventListener('submit', (event) => event.preventDefault());
   });
 </script>
 
