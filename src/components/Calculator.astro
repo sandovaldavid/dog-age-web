@@ -98,7 +98,11 @@ const c = getCopy(lang);
       result.hidden = false;
       if (valueEl) valueEl.textContent = formatHumanYears(outcome.humanYears);
       if (unitEl) unitEl.textContent = form.dataset.resultUnit ?? '';
-      if (stageEl) stageEl.textContent = form.getAttribute(STAGE_ATTR[lifeStage(outcome.humanYears)]) ?? '';
+      if (stageEl) {
+        const stageKey = lifeStage(outcome.humanYears);
+        stageEl.className = 'stage stage-' + stageKey.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
+        stageEl.textContent = form.getAttribute(STAGE_ATTR[stageKey]) ?? '';
+      }
       if (beyondEl) {
         beyondEl.hidden = !outcome.beyondStudyRange;
         beyondEl.textContent = form.dataset.msgBeyondStudy ?? '';
@@ -113,9 +117,24 @@ const c = getCopy(lang);
   .card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 0.75rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 14px rgb(61 44 30 / 0.07);
     padding: 1.5rem;
     margin-block: 2rem;
+    transition:
+      transform 160ms ease-out,
+      box-shadow 160ms ease-out;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgb(61 44 30 / 0.1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card:hover {
+      transform: none;
+    }
   }
 
   .fields {
@@ -136,21 +155,19 @@ const c = getCopy(lang);
     width: 7rem;
     padding: 0.4rem 0.6rem;
     border: 1px solid var(--border);
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
     color: inherit;
     background: var(--bg);
+  }
+
+  input[type='number']:focus-visible {
+    border-color: var(--accent);
   }
 
   .form-error {
     color: #b91c1c;
     font-weight: bold;
     margin-bottom: 0;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .form-error {
-      color: #fca5a5;
-    }
   }
 
   .human-age {
@@ -160,6 +177,11 @@ const c = getCopy(lang);
     line-height: 1.1;
   }
 
+  .human-age .value {
+    color: var(--accent);
+    font-weight: 800;
+  }
+
   .unit {
     color: var(--muted);
     margin-top: 0;
@@ -167,18 +189,62 @@ const c = getCopy(lang);
 
   .stage {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
+    padding: 0.3rem 0.9rem;
     border-radius: 999px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    font-weight: bold;
+    font-weight: 700;
+  }
+
+  .stage-puppy {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .stage-young-adult {
+    background: #dcfce7;
+    color: #14532d;
+  }
+
+  .stage-mature-adult {
+    background: #ffedd5;
+    color: #7c2d12;
+  }
+
+  .stage-senior {
+    background: #ede9fe;
+    color: #4c1d95;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .form-error {
+      color: #fca5a5;
+    }
+
+    .stage-puppy {
+      background: #3a2f0e;
+      color: #fde68a;
+    }
+
+    .stage-young-adult {
+      background: #12351f;
+      color: #bbf7d0;
+    }
+
+    .stage-mature-adult {
+      background: #3a2415;
+      color: #fdba74;
+    }
+
+    .stage-senior {
+      background: #2b2350;
+      color: #ddd6fe;
+    }
   }
 
   .beyond-warning {
     background: var(--warn-bg);
     color: var(--warn-fg);
     padding: 0.6rem 0.75rem;
-    border-radius: 0.5rem;
+    border-radius: 0.75rem;
   }
 
   .stages-note {

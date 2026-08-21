@@ -50,26 +50,39 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
 
 <style is:global>
   :root {
-    --fg: #1c1c1e;
-    --bg: #fdfdfc;
-    --accent: #9a3412;
-    --muted: #5f6368;
-    --card: #fff;
-    --border: #e2e2df;
+    color-scheme: light dark;
+    --bg: #fff8f2;
+    --card: #ffffff;
+    --fg: #3d2c1e;
+    --muted: #8a6f5c;
+    --accent: #ea580c;
+    --accent-contrast: #ffffff;
+    --accent-soft: #ffedd5;
+    --border: #f0dfce;
     --warn-bg: #fef3c7;
-    --warn-fg: #78350f;
+    --warn-fg: #92400e;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --fg: #ececec;
-      --bg: #17171a;
-      --accent: #fdba74;
-      --muted: #a8a8a0;
-      --card: #222226;
-      --border: #3a3a3e;
+      --bg: #201612;
+      --card: #2b1e17;
+      --fg: #f5ebdd;
+      --muted: #b99c86;
+      --accent: #fb923c;
+      --accent-contrast: #201612;
+      --accent-soft: #38251a;
+      --border: #40302a;
       --warn-bg: #452f0b;
       --warn-fg: #fde68a;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition: none !important;
     }
   }
 
@@ -86,7 +99,7 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
       'Segoe UI',
       Roboto,
       sans-serif;
-    line-height: 1.6;
+    line-height: 1.65;
     color: var(--fg);
     background: var(--bg);
     margin: 0;
@@ -127,10 +140,17 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
   .lang-link {
     display: inline-block;
     min-height: 44px;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-weight: 600;
+    border: none;
+    border-radius: 999px;
     text-decoration: none;
+  }
+
+  .lang-link:hover {
+    filter: brightness(1.05);
   }
 
   .site-footer {
@@ -149,8 +169,30 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
 
   table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
     background: var(--card);
+  }
+
+  thead th {
+    background: var(--accent-soft);
+  }
+
+  tbody th[scope='row'] {
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  tbody td {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  tbody tr:hover {
+    background: color-mix(in srgb, var(--accent-soft) 50%, transparent);
   }
 
   th,
