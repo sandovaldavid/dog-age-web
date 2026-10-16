@@ -14,7 +14,7 @@ human_age = 16 · ln(dog_age) + 31
 
 A 1-year-old dog is already about **31** in human years; a 12-year-old Labrador, about **71**. Aging is fast early and slows down later — a logarithmic progression, not a constant linear multiplier.
 
-**Live site:** https://sandovaldavid.github.io/dog-age-web/
+**Live site:** https://dog-age.sandovaldavid.com/
 
 | Light | Dark |
 | --- | --- |
