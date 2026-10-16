@@ -67,4 +67,40 @@ test.describe('Dog Age Web Application', () => {
     const darkA11y = await new AxeBuilder({ page }).analyze();
     expect(darkA11y.violations).toEqual([]);
   });
+
+  test('has all required favicon, manifest and SEO OpenGraph assets in head', async ({ page }) => {
+    await page.goto('./');
+    const svgIcon = page.locator('link[rel="icon"][type="image/svg+xml"]');
+    await expect(svgIcon).toHaveCount(1);
+
+    const pngIcon = page.locator('link[rel="icon"][sizes="32x32"]');
+    await expect(pngIcon).toHaveCount(1);
+
+    const appleIcon = page.locator('link[rel="apple-touch-icon"]');
+    await expect(appleIcon).toHaveCount(1);
+
+    const manifest = page.locator('link[rel="manifest"]');
+    await expect(manifest).toHaveCount(1);
+
+    const ogImage = page.locator('meta[property="og:image"]');
+    await expect(ogImage).toHaveAttribute('content', /og-image-en\.png$/);
+
+    await page.goto('./es/');
+    const esOgImage = page.locator('meta[property="og:image"]');
+    await expect(esOgImage).toHaveAttribute('content', /og-image-es\.png$/);
+  });
+
+  test('footer contains comprehensive scientific citation and legal disclaimers', async ({ page }) => {
+    await page.goto('./');
+    const citation = page.locator('.citation-block');
+    await expect(citation).toContainText('Wang T, Ma J');
+    await expect(citation.locator('a[href*="doi.org"]')).toBeVisible();
+    await expect(citation.locator('a[href*="ncbi.nlm.nih.gov/pmc"]')).toBeVisible();
+
+    const legal = page.locator('.legal-block');
+    await expect(legal).toBeVisible();
+    await expect(legal).toContainText('Veterinary Notice');
+    await expect(legal).toContainText('Non-Affiliation');
+    await expect(legal).toContainText('Privacy Guarantee');
+  });
 });

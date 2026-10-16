@@ -75,8 +75,14 @@ npm run check      # run Astro type and template diagnostics
 - Every pull request and push runs the **CI Quality Gate** (`.github/workflows/ci.yml`), running checks, tests, builds, and automated E2E/a11y audits.
 - Deploys to GitHub Pages automatically upon passing all quality checks (`.github/workflows/deploy.yml`).
 
-## Citation
+## Citation & Scientific Attribution
 
-Wang T, Ma J, Hogan AN, Fong S, Licon K, Tsui B, Kreisberg JF, Adams PD, Carvunis A-R, Bannasch DL, Ostrander EA, Ideker T. *Quantitative Translation of Dog-to-Human Aging by Conserved Remodeling of the DNA Methylome.* Cell Systems. 2020;11(2):176–185.e6. [doi:10.1016/j.cels.2020.06.006](https://doi.org/10.1016/j.cels.2020.06.006)
+Wang T, Ma J, Hogan AN, Fong S, Licon K, Tsui B, Kreisberg JF, Adams PD, Carvunis A-R, Bannasch DL, Ostrander EA, Ideker T. *Quantitative Translation of Dog-to-Human Aging by Conserved Remodeling of the DNA Methylome.* Cell Systems. 2020;11(2):176–185.e6. [doi:10.1016/j.cels.2020.06.006](https://doi.org/10.1016/j.cels.2020.06.006) • [PMC7484147](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7484147/)
 
-Educational project created by [David Sandoval](https://hub.sandovaldavid.com) — not affiliated with the study authors or publishers.
+## Legal Notices & Disclaimers
+
+- **Educational & Veterinary Notice:** This tool is strictly for educational, illustrative, and scientific communication purposes. It does not provide veterinary medical advice, clinical diagnosis, prognosis, or healthcare treatment plans. Biological aging varies across dog breeds, adult sizes, genetics, and health conditions. Always consult a licensed veterinarian for health evaluations and medical decisions regarding your pet.
+- **Non-Affiliation & Trademarks:** This independent open-source project is developed by [David Sandoval](https://hub.sandovaldavid.com). It is not affiliated with, sponsored by, or endorsed by Cell Press, Elsevier, University of California San Diego (UCSD), UC Davis, or the study authors. All product names, logos, and brands belong to their respective owners.
+- **Privacy Guarantee:** All calculations run 100% locally in your browser. No cookies, no trackers, and no personal or pet data is collected or transmitted to external servers.
+- **License:** Open source under the [MIT License](LICENSE).
+

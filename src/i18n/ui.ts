@@ -71,10 +71,21 @@ const en = {
     'This tool applies the population-level function published by Wang et al. (2020) in Cell Systems, built from blood DNA methylation: 95 Labrador retrievers (0.1–16 years) were compared with 320 humans (1–103 years) across 54,469 shared CpG sites, and each dog was matched to the average age of the five humans with the most similar methylome.',
     'It is an analogy between life stages measured across populations — not a measurement of your individual dog, not a DNA test, and not veterinary advice. The model was fitted on Labrador retrievers; other breeds and health conditions can age differently.',
   ],
-  citationTitle: 'Citation',
+  citationTitle: 'Scientific Citation & Source',
   citation:
     'Wang T, Ma J, Hogan AN, Fong S, Licon K, Tsui B, Kreisberg JF, Adams PD, Carvunis A-R, Bannasch DL, Ostrander EA, Ideker T. Quantitative Translation of Dog-to-Human Aging by Conserved Remodeling of the DNA Methylome. Cell Systems. 2020;11(2):176–185.e6.',
   citationDoiLabel: 'doi:10.1016/j.cels.2020.06.006',
+  citationPmcLabel: 'Free PMC Full Text: PMC7484147',
+  citationPmcUrl: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7484147/',
+  legalHeading: 'Disclaimers & Legal Notice',
+  vetDisclaimer:
+    'Veterinary Notice: This tool is intended solely for educational, illustrative, and scientific communication purposes. It does not provide veterinary medical advice, clinical diagnosis, prognosis, or healthcare treatment plans. Biological aging varies by breed, adult weight, genetics, and clinical status. Always consult a licensed veterinarian for health evaluations and clinical care decisions.',
+  nonAffiliationNotice:
+    'Non-Affiliation: This independent open-source project is developed by David Sandoval. It is not affiliated with, sponsored by, or endorsed by Cell Press, Elsevier, University of California San Diego (UCSD), UC Davis, or the authors of the study. All product names, logos, and brands are property of their respective owners.',
+  privacyNotice:
+    'Privacy Guarantee: 100% client-side computation. No cookies, no trackers, and no personal or pet data is collected or transmitted to external servers.',
+  licenseLabel: 'MIT License',
+  licenseUrl: 'https://github.com/sandovaldavid/dog-age-web/blob/main/LICENSE',
   creditLine:
     'Educational calculator based on Wang et al., Cell Systems (2020) — UC San Diego / UC Davis / NHGRI. Not affiliated with the authors or publishers.',
   authorBy: 'Created by',
@@ -150,10 +161,21 @@ const es: typeof en = {
     'Esta herramienta aplica la función poblacional publicada por Wang et al. (2020) en Cell Systems, construida a partir de la metilación del ADN en sangre: se compararon 95 Labrador retrievers (0,1–16 años) con 320 humanos (1–103 años) en 54.469 sitios CpG compartidos, emparejando cada perro con la edad media de los cinco humanos de metiloma más parecido.',
     'Es una analogía entre etapas de vida medidas en poblaciones: no mide a tu perro individual, no es un test de ADN ni consejo veterinario. El modelo se ajustó sobre Labrador retrievers; otras razas y estados de salud pueden envejecer distinto.',
   ],
-  citationTitle: 'Cita',
+  citationTitle: 'Fuente científica y cita académica',
   citation:
     'Wang T, Ma J, Hogan AN, Fong S, Licon K, Tsui B, Kreisberg JF, Adams PD, Carvunis A-R, Bannasch DL, Ostrander EA, Ideker T. Quantitative Translation of Dog-to-Human Aging by Conserved Remodeling of the DNA Methylome. Cell Systems. 2020;11(2):176–185.e6.',
   citationDoiLabel: 'doi:10.1016/j.cels.2020.06.006',
+  citationPmcLabel: 'Texto completo libre en PMC: PMC7484147',
+  citationPmcUrl: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7484147/',
+  legalHeading: 'Descargos de responsabilidad y aviso legal',
+  vetDisclaimer:
+    'Aviso veterinario: Esta herramienta tiene fines exclusivamente educativos, ilustrativos y de divulgación científica. No constituye asesoramiento médico ni veterinario, diagnóstico clínico, pronóstico de longevidad ni pauta de tratamiento. El envejecimiento biológico varía según la raza, peso adulto, genética e historial clínico. Consulte siempre a un médico veterinario colegiado para cualquier decisión de salud o cuidado de su mascota.',
+  nonAffiliationNotice:
+    'No afiliación: Este proyecto independiente de código abierto es desarrollado por David Sandoval. No cuenta con afiliación, patrocinio ni respaldo de Cell Press, Elsevier, la Universidad de California en San Diego (UCSD), UC Davis ni de los autores del estudio. Todos los nombres comerciales y marcas pertenecen a sus respectivos titulares.',
+  privacyNotice:
+    'Garantía de privacidad: Todo el cálculo se realiza 100% localmente en tu navegador. Sin cookies, sin rastreadores y sin recopilación ni transmisión de datos personales o de mascotas a servidores externos.',
+  licenseLabel: 'Licencia MIT',
+  licenseUrl: 'https://github.com/sandovaldavid/dog-age-web/blob/main/LICENSE',
   creditLine:
     'Calculadora educativa basada en Wang et al., Cell Systems (2020) — UC San Diego / UC Davis / NHGRI. Sin afiliación con los autores o las revistas.',
   authorBy: 'Creado por',
