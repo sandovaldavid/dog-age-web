@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sandovaldavid.github.io/dog-age-web/sitemap.xml

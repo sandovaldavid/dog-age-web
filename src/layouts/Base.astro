@@ -9,6 +9,38 @@ const base = import.meta.env.BASE_URL.replace(/\/+$/, '');
 const pathFor = (l: Language) => (l === 'en' ? `${base}/` : `${base}/es/`);
 const other: Language = lang === 'en' ? 'es' : 'en';
 const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
+
+const canonicalUrl = new URL(pathFor(lang), Astro.site);
+const defaultUrl = new URL(pathFor('en'), Astro.site);
+const alternateEn = new URL(pathFor('en'), Astro.site);
+const alternateEs = new URL(pathFor('es'), Astro.site);
+const ogImageUrl = new URL(`${base}/docs/screenshot-light.png`, Astro.site);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: c.siteName,
+  description: c.metaDescription,
+  url: canonicalUrl.toString(),
+  inLanguage: c.htmlLang,
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'All',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  author: {
+    '@type': 'Person',
+    name: c.authorName,
+    url: c.authorUrl,
+  },
+  citation: {
+    '@type': 'ScholarlyArticle',
+    name: 'Quantitative Translation of Dog-to-Human Aging by Conserved Remodeling of the DNA Methylome',
+    sameAs: doiUrl,
+  },
+};
 ---
 
 <!doctype html>
@@ -18,32 +50,70 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{c.metaTitle}</title>
     <meta name="description" content={c.metaDescription} />
-    <link rel="canonical" href={new URL(pathFor(lang), Astro.site)} />
-    <link rel="alternate" hreflang="en" href={new URL(pathFor('en'), Astro.site)} />
-    <link rel="alternate" hreflang="es" href={new URL(pathFor('es'), Astro.site)} />
+
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff8f2" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#201612" />
+
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="en" href={alternateEn} />
+    <link rel="alternate" hreflang="es" href={alternateEs} />
+    <link rel="alternate" hreflang="x-default" href={defaultUrl} />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content={c.metaTitle} />
     <meta property="og:description" content={c.metaDescription} />
-    <meta property="og:url" content={new URL(pathFor(lang), Astro.site)} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_US'} />
+    <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_ES'} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={c.metaTitle} />
+    <meta name="twitter:description" content={c.metaDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- Structured Data -->
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
   </head>
   <body>
     <header class="site-header">
-      <p class="site-name">{c.siteName}</p>
+      <a class="site-name" href={pathFor(lang)}>{c.siteName}</a>
       <nav aria-label={c.langToggleLabel}>
-        <a class="lang-link" href={pathFor(other)}>{languages[other]}</a>
+        <a class="lang-link" href={pathFor(other)} hreflang={other} lang={other}>
+          {languages[other]}
+        </a>
       </nav>
     </header>
+
     <main class="container">
       <slot />
     </main>
+
     <footer class="site-footer">
-      <section aria-labelledby="citation-heading">
-        <h2 id="citation-heading">{c.citationTitle}</h2>
-        <p>{c.citation}</p>
-        <p><a href={doiUrl}>{c.citationDoiLabel}</a></p>
-      </section>
-      <p class="credit">{c.creditLine}</p>
-      <p class="disclaimer">{c.disclaimer}</p>
+      <div class="footer-inner">
+        <section class="citation-block" aria-labelledby="citation-heading">
+          <h2 id="citation-heading">{c.citationTitle}</h2>
+          <p class="citation-text">{c.citation}</p>
+          <p class="citation-link">
+            <a href={doiUrl} target="_blank" rel="noopener noreferrer">{c.citationDoiLabel}</a>
+          </p>
+        </section>
+
+        <div class="footer-divider"></div>
+
+        <section class="footer-meta" aria-label="Credits and disclaimer">
+          <p class="credit-author">
+            {c.authorBy} <a href={c.authorUrl} target="_blank" rel="noopener noreferrer"><strong>{c.authorName}</strong></a> &bull;
+            <a href={c.repoUrl} target="_blank" rel="noopener noreferrer">{c.repoLabel}</a>
+          </p>
+          <p class="credit-source">{c.creditLine}</p>
+          <p class="disclaimer">{c.disclaimer}</p>
+        </section>
+      </div>
     </footer>
   </body>
 </html>
@@ -105,16 +175,22 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
     color: var(--fg);
     background: var(--bg);
     margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
   .container {
     max-width: 56rem;
+    width: 100%;
     margin-inline: auto;
     padding-inline: 1.25rem;
+    flex: 1;
   }
 
   a {
     color: var(--accent);
+    text-underline-offset: 3px;
   }
 
   a:focus-visible,
@@ -130,77 +206,103 @@ const doiUrl = 'https://doi.org/10.1016/j.cels.2020.06.006';
     align-items: center;
     gap: 1rem;
     max-width: 56rem;
+    width: 100%;
     margin-inline: auto;
     padding: 1rem 1.25rem;
   }
 
   .site-name {
     margin: 0;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--fg);
+    text-decoration: none;
+    line-height: 1.3;
+  }
+
+  .site-name:hover {
+    color: var(--accent);
   }
 
   .lang-link {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     min-height: 44px;
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 1rem;
     background: var(--accent-soft);
     color: var(--accent-text);
     font-weight: 600;
-    border: none;
+    font-size: 0.9rem;
     border-radius: 999px;
     text-decoration: none;
+    transition: filter 150ms ease;
+    white-space: nowrap;
   }
 
   .lang-link:hover {
-    filter: brightness(1.05);
+    filter: brightness(1.06);
   }
 
   .site-footer {
-    max-width: 56rem;
-    margin-inline: auto;
-    padding: 2rem 1.25rem 3rem;
-    color: var(--muted);
-    font-size: 0.875rem;
-    border-top: 1px solid var(--border);
-    margin-top: 3rem;
-  }
-
-  .site-footer h2 {
-    font-size: 1rem;
-  }
-
-  table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    overflow: hidden;
-    border-radius: 1rem;
-    border: 1px solid var(--border);
-    background: var(--card);
+    margin-top: 3.5rem;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
   }
 
-  thead th {
-    background: var(--accent-soft);
-  }
-
-  tbody th[scope='row'] {
-    font-weight: 400;
-    color: var(--muted);
-  }
-
-  tbody td {
-    font-weight: 700;
+  .site-footer a {
     color: var(--accent-text);
   }
 
-  tbody tr:hover {
-    background: color-mix(in srgb, var(--accent-soft) 50%, transparent);
+  .footer-inner {
+    max-width: 56rem;
+    margin-inline: auto;
+    padding: 2.5rem 1.25rem 3.5rem;
+    color: var(--muted);
+    font-size: 0.875rem;
   }
 
-  th,
-  td {
-    text-align: left;
-    padding: 0.6rem 0.75rem;
-    border-bottom: 1px solid var(--border);
+  .citation-block h2 {
+    font-size: 1.05rem;
+    color: var(--fg);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
   }
+
+  .citation-text {
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+  }
+
+  .citation-link {
+    margin-top: 0.25rem;
+  }
+
+  .footer-divider {
+    height: 1px;
+    background: var(--border);
+    margin-block: 1.75rem;
+    opacity: 0.7;
+  }
+
+  .credit-author {
+    color: var(--fg);
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .credit-source {
+    margin-bottom: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .disclaimer {
+    color: var(--fg);
+    opacity: 0.88;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
 </style>
