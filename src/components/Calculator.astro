@@ -8,108 +8,323 @@ const c = getCopy(lang);
 ---
 
 <section class="calculator card" aria-labelledby="calc-heading">
-  <h2 id="calc-heading">{c.calculatorHeading}</h2>
+  <div class="calculator-header">
+    <h2 id="calc-heading">{c.calculatorHeading}</h2>
+    <span class="vet-notice-badge">{c.vetNotice}</span>
+  </div>
+
   <form
     class="dog-age-form"
     novalidate
+    data-lang={lang}
     data-msg-error-empty={c.msgErrorEmpty}
     data-msg-error-invalid={c.msgErrorInvalid}
     data-msg-error-too-young={c.msgErrorTooYoung}
     data-msg-beyond-study={c.msgBeyondStudy}
     data-result-unit={c.resultUnit}
+    data-sr-prefix={c.srResultPrefix}
+    data-sr-years={c.srResultYears}
+    data-share-title={c.siteName}
+    data-share-copied={c.shareCopied}
     data-stage-puppy={c.stages.puppy}
     data-stage-young-adult={c.stages.youngAdult}
     data-stage-mature-adult={c.stages.matureAdult}
     data-stage-senior={c.stages.senior}
   >
-    <div class="fields">
-      <label>
-        <span>{c.labelYears}</span>
-        <input
-          type="number"
-          name="years"
-          min="0"
-          max="30"
-          step="1"
-          inputmode="numeric"
-          autocomplete="off"
-        />
-      </label>
-      <label>
-        <span>{c.labelMonths}</span>
-        <input
-          type="number"
-          name="months"
-          min="0"
-          max="11"
-          step="1"
-          inputmode="numeric"
-          autocomplete="off"
-        />
-      </label>
-    </div>
-    <p class="form-error" role="alert" hidden></p>
+    <fieldset class="fields-fieldset">
+      <legend class="sr-only">{c.fieldgroupLegend}</legend>
+      <div class="fields-grid">
+        <div class="field-item">
+          <label for="dog-years">
+            <span class="label-text">{c.labelYears}</span>
+          </label>
+          <input
+            id="dog-years"
+            type="number"
+            name="years"
+            min="0"
+            max="30"
+            step="1"
+            inputmode="numeric"
+            placeholder={c.placeholderYears}
+            autocomplete="off"
+            aria-describedby="form-error-msg"
+          />
+        </div>
+
+        <div class="field-item">
+          <label for="dog-months">
+            <span class="label-text">{c.labelMonths}</span>
+          </label>
+          <input
+            id="dog-months"
+            type="number"
+            name="months"
+            min="0"
+            max="11"
+            step="1"
+            inputmode="numeric"
+            placeholder={c.placeholderMonths}
+            autocomplete="off"
+            aria-describedby="form-error-msg"
+          />
+        </div>
+      </div>
+    </fieldset>
+
+    <p id="form-error-msg" class="form-error" role="status" aria-live="polite" hidden></p>
   </form>
-  <div class="result" aria-live="polite" hidden>
-    <p class="human-age">~<span class="value"></span></p>
-    <p class="unit"></p>
-    <p class="stage"></p>
-    <p class="beyond-warning" hidden></p>
+
+  <div class="result-box" aria-live="polite" aria-atomic="true">
+    <div class="result-prompt">
+      <p class="prompt-text">{c.resultPrompt}</p>
+    </div>
+
+    <div class="result-content" hidden>
+      <div class="result-main">
+        <p class="human-age">
+          <span class="tilde" aria-hidden="true">~</span><span class="value"></span>
+        </p>
+        <p class="unit">{c.resultUnit}</p>
+        <span class="stage" aria-hidden="true"></span>
+      </div>
+
+      <p class="beyond-warning" hidden role="note">{c.msgBeyondStudy}</p>
+
+      <div class="result-actions">
+        <button type="button" class="share-btn" aria-label={c.shareBtn}>
+          <svg class="share-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
+            <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34 3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+          </svg>
+          <span class="share-label">{c.shareBtn}</span>
+        </button>
+        <span class="share-toast" role="status" aria-live="polite" hidden></span>
+      </div>
+
+      <span class="sr-only result-sr-summary"></span>
+    </div>
   </div>
+
   <noscript>
-    <p>{c.noscript}</p>
+    <p class="noscript-notice">{c.noscript}</p>
   </noscript>
   <p class="stages-note">{c.stagesNote}</p>
 </section>
 
 <script>
-  import { calcDogAge, formatHumanYears, lifeStage, type CalcError, type LifeStage } from '@/lib/dogAge';
-  const ERROR_ATTR: Record<CalcError, string> = {
-    errorEmpty: 'data-msg-error-empty',
-    errorInvalid: 'data-msg-error-invalid',
-    errorTooYoung: 'data-msg-error-too-young',
-  };
-  const STAGE_ATTR: Record<LifeStage, string> = {
-    puppy: 'data-stage-puppy',
-    youngAdult: 'data-stage-young-adult',
-    matureAdult: 'data-stage-mature-adult',
-    senior: 'data-stage-senior',
-  };
+  import { computeCalculatorState, type ControllerOptions } from '@/lib/calculatorController';
+
   document.querySelectorAll<HTMLFormElement>('form.dog-age-form').forEach((form) => {
-    const errorEl = form.querySelector<HTMLElement>('.form-error');
-    const result = form.parentElement?.querySelector<HTMLElement>('.result');
-    if (!errorEl || !result) return;
-    const valueEl = result.querySelector<HTMLElement>('.value');
-    const unitEl = result.querySelector<HTMLElement>('.unit');
-    const stageEl = result.querySelector<HTMLElement>('.stage');
-    const beyondEl = result.querySelector<HTMLElement>('.beyond-warning');
-    const update = () => {
-      const yearsEl = form.elements.namedItem('years') as HTMLInputElement | null;
-      const monthsEl = form.elements.namedItem('months') as HTMLInputElement | null;
-      if (!yearsEl || !monthsEl) return;
-      const outcome = calcDogAge(yearsEl.value, monthsEl.value);
-      if (!outcome.ok) {
-        errorEl.hidden = false;
-        errorEl.textContent = form.getAttribute(ERROR_ATTR[outcome.error]) ?? '';
-        result.hidden = true;
+    const errorEl = form.querySelector<HTMLElement>('#form-error-msg');
+    const card = form.closest('.calculator');
+    const resultBox = card?.querySelector<HTMLElement>('.result-box');
+    if (!errorEl || !resultBox) return;
+
+    const promptEl = resultBox.querySelector<HTMLElement>('.result-prompt');
+    const contentEl = resultBox.querySelector<HTMLElement>('.result-content');
+    const valueEl = resultBox.querySelector<HTMLElement>('.value');
+    const stageEl = resultBox.querySelector<HTMLElement>('.stage');
+    const beyondEl = resultBox.querySelector<HTMLElement>('.beyond-warning');
+    const srSummaryEl = resultBox.querySelector<HTMLElement>('.result-sr-summary');
+    const shareBtn = resultBox.querySelector<HTMLButtonElement>('.share-btn');
+    const shareToast = resultBox.querySelector<HTMLElement>('.share-toast');
+
+    const yearsEl = form.elements.namedItem('years') as HTMLInputElement | null;
+    const monthsEl = form.elements.namedItem('months') as HTMLInputElement | null;
+    if (!yearsEl || !monthsEl) return;
+
+    // Prevent accidental wheel changing
+    [yearsEl, monthsEl].forEach((input) => {
+      input.addEventListener('wheel', () => {
+        if (document.activeElement === input) input.blur();
+      }, { passive: true });
+    });
+
+    const lang = form.dataset.lang || 'en';
+    const copy: ControllerOptions['copy'] = {
+      resultUnit: form.dataset.resultUnit || '',
+      srPrefix: form.dataset.srPrefix || '',
+      srYears: form.dataset.srYears || '',
+      stages: {
+        puppy: form.dataset.stagePuppy || '',
+        youngAdult: form.dataset.stageYoungAdult || '',
+        matureAdult: form.dataset.stageMatureAdult || '',
+        senior: form.dataset.stageSenior || '',
+      },
+      errors: {
+        errorEmpty: form.dataset.msgErrorEmpty || '',
+        errorInvalid: form.dataset.msgErrorInvalid || '',
+        errorTooYoung: form.dataset.msgErrorTooYoung || '',
+      },
+    };
+
+    let userHasBlurred = false;
+
+    const highlightMilestone = (closestAge: number | null) => {
+      document.querySelectorAll<HTMLTableRowElement>('tr[data-milestone-age]').forEach((tr) => {
+        if (closestAge !== null && parseFloat(tr.dataset.milestoneAge || '') === closestAge) {
+          tr.classList.add('highlight');
+        } else {
+          tr.classList.remove('highlight');
+        }
+      });
+    };
+
+    const updateSvgMarker = (dogYears: number | null, humanYears: number | null) => {
+      const svg = document.querySelector<SVGSVGElement>('.aging-curve-svg');
+      if (!svg) return;
+      const marker = svg.querySelector<SVGGElement>('.user-marker');
+      if (!marker) return;
+
+      if (dogYears === null || humanYears === null) {
+        marker.style.display = 'none';
         return;
       }
+
+      const xMin = parseFloat(svg.dataset.scaleXMin || '0');
+      const xMax = parseFloat(svg.dataset.scaleXMax || '18');
+      const yMin = parseFloat(svg.dataset.scaleYMin || '0');
+      const yMax = parseFloat(svg.dataset.scaleYMax || '120');
+      const plotLeft = parseFloat(svg.dataset.plotLeft || '45');
+      const plotTop = parseFloat(svg.dataset.plotTop || '30');
+      const plotW = parseFloat(svg.dataset.plotW || '560');
+      const plotH = parseFloat(svg.dataset.plotH || '250');
+
+      // Clamped coordinates
+      const clampedDog = Math.min(Math.max(dogYears, 0.15), 18);
+      const clampedHuman = Math.min(Math.max(humanYears, 0), 120);
+
+      const px = plotLeft + ((clampedDog - xMin) / (xMax - xMin)) * plotW;
+      const py = plotTop + plotH - ((clampedHuman - yMin) / (yMax - yMin)) * plotH;
+
+      marker.style.display = '';
+      marker.setAttribute('transform', `translate(${px.toFixed(1)}, ${py.toFixed(1)})`);
+    };
+
+
+    const syncUrlParams = (y: string, m: string) => {
+      const url = new URL(window.location.href);
+      if (y) url.searchParams.set('y', y);
+      else url.searchParams.delete('y');
+      if (m) url.searchParams.set('m', m);
+      else url.searchParams.delete('m');
+      window.history.replaceState({}, '', url.toString());
+    };
+
+    const update = (sourceEvent?: Event) => {
+      const hasBad = Boolean(yearsEl.validity.badInput || monthsEl.validity.badInput);
+      const viewModel = computeCalculatorState({
+        years: yearsEl.value,
+        months: monthsEl.value,
+        hasBadInput: hasBad,
+        lang,
+        copy,
+      });
+
+      if (viewModel.status === 'empty') {
+        errorEl.hidden = true;
+        yearsEl.removeAttribute('aria-invalid');
+        monthsEl.removeAttribute('aria-invalid');
+        if (promptEl) promptEl.hidden = false;
+        if (contentEl) contentEl.hidden = true;
+        highlightMilestone(null);
+        updateSvgMarker(null, null);
+        syncUrlParams('', '');
+        return;
+      }
+
+      if (viewModel.status === 'error') {
+        // Only show error visually if user already blurred or triggered change/submit
+        const shouldShowVisually = userHasBlurred || sourceEvent?.type === 'change';
+        if (shouldShowVisually) {
+          errorEl.hidden = false;
+          errorEl.textContent = viewModel.errorMessage;
+          yearsEl.setAttribute('aria-invalid', 'true');
+          monthsEl.setAttribute('aria-invalid', 'true');
+        }
+        if (promptEl) promptEl.hidden = false;
+        if (contentEl) contentEl.hidden = true;
+        highlightMilestone(null);
+        updateSvgMarker(null, null);
+        return;
+      }
+
+      // Success
       errorEl.hidden = true;
-      result.hidden = false;
-      if (valueEl) valueEl.textContent = formatHumanYears(outcome.humanYears);
-      if (unitEl) unitEl.textContent = form.dataset.resultUnit ?? '';
+      yearsEl.removeAttribute('aria-invalid');
+      monthsEl.removeAttribute('aria-invalid');
+
+      if (promptEl) promptEl.hidden = true;
+      if (contentEl) contentEl.hidden = false;
+
+      if (valueEl) valueEl.textContent = viewModel.formattedValue;
       if (stageEl) {
-        const stageKey = lifeStage(outcome.humanYears);
-        stageEl.className = 'stage stage-' + stageKey.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase());
-        stageEl.textContent = form.getAttribute(STAGE_ATTR[stageKey]) ?? '';
+        stageEl.className = `stage ${viewModel.stageCssClass}`;
+        stageEl.textContent = viewModel.stageLabel;
       }
       if (beyondEl) {
-        beyondEl.hidden = !outcome.beyondStudyRange;
-        beyondEl.textContent = form.dataset.msgBeyondStudy ?? '';
+        beyondEl.hidden = !viewModel.beyondStudy;
       }
+      if (srSummaryEl) {
+        srSummaryEl.textContent = viewModel.srSummary;
+      }
+
+      highlightMilestone(viewModel.closestMilestoneAge);
+      updateSvgMarker(viewModel.dogYears, viewModel.humanYears);
+      syncUrlParams(yearsEl.value, monthsEl.value);
     };
-    form.addEventListener('input', update);
-    form.addEventListener('submit', (event) => event.preventDefault());
+
+    form.addEventListener('input', (e) => update(e));
+    form.addEventListener('change', (e) => {
+      userHasBlurred = true;
+      update(e);
+    });
+    [yearsEl, monthsEl].forEach((input) => {
+      input.addEventListener('blur', (e) => {
+        userHasBlurred = true;
+        update(e);
+      });
+    });
+    form.addEventListener('submit', (e) => e.preventDefault());
+
+    // Share button handler
+    if (shareBtn && shareToast) {
+      shareBtn.addEventListener('click', async () => {
+        const shareUrl = window.location.href;
+        const title = form.dataset.shareTitle || document.title;
+        const text = srSummaryEl?.textContent || document.title;
+
+        if (navigator.share) {
+          try {
+            await navigator.share({ title, text, url: shareUrl });
+            return;
+          } catch {
+            // fallback to clipboard
+          }
+        }
+
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          shareToast.textContent = form.dataset.shareCopied || 'Copied!';
+          shareToast.hidden = false;
+          setTimeout(() => {
+            shareToast.hidden = true;
+          }, 3000);
+        } catch {
+          // silent fallback
+        }
+      });
+    }
+
+    // Initialize from URL search params if present
+    const params = new URLSearchParams(window.location.search);
+    const initialY = params.get('y');
+    const initialM = params.get('m');
+    if (initialY !== null || initialM !== null) {
+      if (initialY !== null) yearsEl.value = initialY;
+      if (initialM !== null) monthsEl.value = initialM;
+      update();
+    }
   });
 </script>
 
@@ -118,79 +333,146 @@ const c = getCopy(lang);
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 1.25rem;
-    box-shadow: 0 2px 14px rgb(61 44 30 / 0.07);
+    box-shadow: 0 4px 16px rgb(61 44 30 / 0.06);
     padding: 1.5rem;
     margin-block: 2rem;
-    transition:
-      transform 160ms ease-out,
-      box-shadow 160ms ease-out;
   }
 
-  .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgb(61 44 30 / 0.1);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .card:hover {
-      transform: none;
-    }
-  }
-
-  .fields {
+  .calculator-header {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
     gap: 1rem;
+    margin-bottom: 1.25rem;
     flex-wrap: wrap;
   }
 
-  label {
-    display: grid;
-    gap: 0.35rem;
+  .calculator-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  .vet-notice-badge {
+    font-size: 0.75rem;
     font-weight: 600;
+    color: var(--muted);
+    background: var(--accent-soft);
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+  }
+
+  .fields-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .fields-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    max-width: 20rem;
+  }
+
+  .field-item {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .label-text {
+    font-weight: 600;
+    font-size: 0.95rem;
   }
 
   input[type='number'] {
     font: inherit;
     min-height: 44px;
-    width: 7rem;
-    padding: 0.4rem 0.6rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
     border: 1px solid var(--border);
     border-radius: 0.75rem;
     color: inherit;
     background: var(--bg);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
   }
 
   input[type='number']:focus-visible {
     border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+
+  input[type='number'][aria-invalid='true'] {
+    border-color: #dc2626;
   }
 
   .form-error {
     color: #b91c1c;
-    font-weight: bold;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 0.75rem;
     margin-bottom: 0;
   }
 
-  .human-age {
-    font-size: clamp(2.5rem, 8vw, 4rem);
-    font-weight: 800;
-    margin: 0;
-    line-height: 1.1;
+  .result-box {
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border);
+    min-height: 140px; /* Reserves layout space to avoid CLS */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
-  .human-age .value {
-    color: var(--accent);
+  .result-prompt {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .prompt-text {
+    margin: 0;
+  }
+
+  .result-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .result-main {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .human-age {
+    font-size: clamp(2.75rem, 8vw, 4rem);
     font-weight: 800;
+    margin: 0;
+    line-height: 1;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .human-age .tilde {
+    font-size: 0.75em;
+    opacity: 0.85;
+    margin-right: 0.05em;
   }
 
   .unit {
     color: var(--muted);
-    margin-top: 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
   }
 
   .stage {
     display: inline-block;
-    padding: 0.3rem 0.9rem;
+    padding: 0.35rem 0.9rem;
     border-radius: 999px;
+    font-size: 0.9rem;
     font-weight: 700;
   }
 
@@ -243,13 +525,68 @@ const c = getCopy(lang);
   .beyond-warning {
     background: var(--warn-bg);
     color: var(--warn-fg);
-    padding: 0.6rem 0.75rem;
+    padding: 0.6rem 0.85rem;
     border-radius: 0.75rem;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  .result-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.4rem 0.85rem;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 150ms ease, border-color 150ms ease;
+  }
+
+  .share-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .share-toast {
+    font-size: 0.85rem;
+    color: var(--accent-text);
+    font-weight: 600;
+  }
+
+  .noscript-notice {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
   }
 
   .stages-note {
     color: var(--muted);
     font-size: 0.85rem;
+    margin-top: 1rem;
     margin-bottom: 0;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 </style>
