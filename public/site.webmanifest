@@ -1,0 +1,26 @@
+{
+  "name": "Dog Age in Human Years",
+  "short_name": "Dog Age",
+  "description": "Calculate dog age in human years with the Wang et al. (2020) epigenetic formula.",
+  "start_url": "/dog-age-web/",
+  "display": "standalone",
+  "background_color": "#fff8f2",
+  "theme_color": "#ea580c",
+  "icons": [
+    {
+      "src": "/dog-age-web/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/dog-age-web/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/dog-age-web/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -14,17 +14,21 @@ const canonicalUrl = new URL(pathFor(lang), Astro.site);
 const defaultUrl = new URL(pathFor('en'), Astro.site);
 const alternateEn = new URL(pathFor('en'), Astro.site);
 const alternateEs = new URL(pathFor('es'), Astro.site);
-const ogImageUrl = new URL(`${base}/docs/screenshot-light.png`, Astro.site);
+const ogImageFile = lang === 'es' ? 'og-image-es.png' : 'og-image-en.png';
+const ogImageUrl = new URL(`${base}/${ogImageFile}`, Astro.site);
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: c.siteName,
+  headline: c.metaTitle,
   description: c.metaDescription,
   url: canonicalUrl.toString(),
   inLanguage: c.htmlLang,
   applicationCategory: 'EducationalApplication',
   operatingSystem: 'All',
+  browserRequirements: 'Requires JavaScript for interactive calculation',
+  isAccessibleForFree: true,
   offers: {
     '@type': 'Offer',
     price: '0',
@@ -35,10 +39,23 @@ const jsonLd = {
     name: c.authorName,
     url: c.authorUrl,
   },
+  license: c.licenseUrl,
   citation: {
     '@type': 'ScholarlyArticle',
     name: 'Quantitative Translation of Dog-to-Human Aging by Conserved Remodeling of the DNA Methylome',
+    headline: 'Quantitative Translation of Dog-to-Human Aging by Conserved Remodeling of the DNA Methylome',
+    author: [
+      { '@type': 'Person', name: 'Tina Wang' },
+      { '@type': 'Person', name: 'Trey Ideker' },
+    ],
+    datePublished: '2020-08-26',
+    isPartOf: {
+      '@type': 'Periodical',
+      name: 'Cell Systems',
+      issn: '2405-4712',
+    },
     sameAs: doiUrl,
+    identifier: '10.1016/j.cels.2020.06.006',
   },
 };
 ---
@@ -51,7 +68,14 @@ const jsonLd = {
     <title>{c.metaTitle}</title>
     <meta name="description" content={c.metaDescription} />
 
+    <!-- Favicon and App Icons -->
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <link rel="icon" type="image/png" sizes="32x32" href={`${base}/favicon-32x32.png`} />
+    <link rel="icon" type="image/png" sizes="16x16" href={`${base}/favicon-16x16.png`} />
+    <link rel="shortcut icon" href={`${base}/favicon.ico`} />
+    <link rel="apple-touch-icon" sizes="180x180" href={`${base}/apple-touch-icon.png`} />
+    <link rel="manifest" href={`${base}/site.webmanifest`} />
+
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff8f2" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#201612" />
 
@@ -66,6 +90,9 @@ const jsonLd = {
     <meta property="og:description" content={c.metaDescription} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={c.metaTitle} />
     <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_US'} />
     <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_ES'} />
 
@@ -74,6 +101,7 @@ const jsonLd = {
     <meta name="twitter:title" content={c.metaTitle} />
     <meta name="twitter:description" content={c.metaDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={c.metaTitle} />
 
     <!-- Structured Data -->
     <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
@@ -100,18 +128,29 @@ const jsonLd = {
           <p class="citation-text">{c.citation}</p>
           <p class="citation-link">
             <a href={doiUrl} target="_blank" rel="noopener noreferrer">{c.citationDoiLabel}</a>
+            &bull;
+            <a href={c.citationPmcUrl} target="_blank" rel="noopener noreferrer">{c.citationPmcLabel}</a>
           </p>
         </section>
 
         <div class="footer-divider"></div>
 
-        <section class="footer-meta" aria-label="Credits and disclaimer">
+        <section class="legal-block" aria-labelledby="legal-heading">
+          <h2 id="legal-heading" class="legal-heading">{c.legalHeading}</h2>
+          <p class="disclaimer-vet">{c.vetDisclaimer}</p>
+          <p class="disclaimer-non-affil">{c.nonAffiliationNotice}</p>
+          <p class="disclaimer-privacy">{c.privacyNotice}</p>
+        </section>
+
+        <div class="footer-divider"></div>
+
+        <section class="footer-meta" aria-label="Credits and repository">
           <p class="credit-author">
             {c.authorBy} <a href={c.authorUrl} target="_blank" rel="noopener noreferrer"><strong>{c.authorName}</strong></a> &bull;
-            <a href={c.repoUrl} target="_blank" rel="noopener noreferrer">{c.repoLabel}</a>
+            <a href={c.repoUrl} target="_blank" rel="noopener noreferrer">{c.repoLabel}</a> &bull;
+            <a href={c.licenseUrl} target="_blank" rel="noopener noreferrer">{c.licenseLabel}</a>
           </p>
           <p class="credit-source">{c.creditLine}</p>
-          <p class="disclaimer">{c.disclaimer}</p>
         </section>
       </div>
     </footer>
@@ -297,12 +336,25 @@ const jsonLd = {
     line-height: 1.5;
   }
 
-  .disclaimer {
+  .legal-heading {
+    font-size: 1.05rem;
     color: var(--fg);
-    opacity: 0.88;
-    font-size: 0.85rem;
-    line-height: 1.6;
-    margin-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0.5rem;
   }
 
+  .disclaimer-vet {
+    color: var(--fg);
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin-bottom: 0.6rem;
+  }
+
+  .disclaimer-non-affil,
+  .disclaimer-privacy {
+    color: var(--muted);
+    font-size: 0.825rem;
+    line-height: 1.55;
+    margin-bottom: 0.5rem;
+  }
 </style>

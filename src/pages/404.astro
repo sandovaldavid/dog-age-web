@@ -4,7 +4,15 @@ import Base from '@/layouts/Base.astro';
 
 <Base lang="en">
   <div class="not-found card">
-    <div class="paw-icon" aria-hidden="true">🐾</div>
+    <div class="paw-icon" aria-hidden="true">
+      <svg viewBox="0 0 64 64" width="56" height="56" fill="var(--accent)" aria-hidden="true">
+        <ellipse cx="17" cy="24" rx="4.8" ry="7.2" transform="rotate(-28 17 24)" />
+        <ellipse cx="26" cy="16" rx="5.2" ry="7.8" transform="rotate(-8 26 16)" />
+        <ellipse cx="38" cy="16" rx="5.2" ry="7.8" transform="rotate(8 38 16)" />
+        <ellipse cx="47" cy="24" rx="4.8" ry="7.2" transform="rotate(28 47 24)" />
+        <path d="M 32 30 C 38 30, 48 35, 48 42 C 48 48.5, 42.5 53, 37.5 53 C 34.5 53, 33.2 51.5, 32 51.5 C 30.8 51.5, 29.5 53, 26.5 53 C 21.5 53, 16 48.5, 16 42 C 16 35, 26 30, 32 30 Z" />
+      </svg>
+    </div>
     <h1>Page not found / Página no encontrada</h1>
     <p>The page you are looking for does not exist or has been moved.</p>
     <p>La página que buscas no existe o ha sido movida.</p>
