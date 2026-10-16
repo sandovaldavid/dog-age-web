@@ -2,6 +2,6 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://sandovaldavid.github.io',
-  base: '/dog-age-web',
+  site: 'https://dog-age.sandovaldavid.com',
+  base: '/',
 });

@@ -134,23 +134,23 @@ async function main() {
     name: 'Dog Age in Human Years',
     short_name: 'Dog Age',
     description: 'Calculate dog age in human years with the Wang et al. (2020) epigenetic formula.',
-    start_url: '/dog-age-web/',
+    start_url: '/',
     display: 'standalone',
     background_color: '#fff8f2',
     theme_color: '#ea580c',
     icons: [
       {
-        src: '/dog-age-web/icon-192.png',
+        src: '/icon-192.png',
         sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/dog-age-web/icon-512.png',
+        src: '/icon-512.png',
         sizes: '512x512',
         type: 'image/png',
       },
       {
-        src: '/dog-age-web/favicon.svg',
+        src: '/favicon.svg',
         sizes: 'any',
         type: 'image/svg+xml',
       },
@@ -221,7 +221,7 @@ async function main() {
       <!-- Footer attribution line -->
       <line x1="110" y1="480" x2="1030" y2="480" stroke="#f0dfce" stroke-width="1" />
       <text x="110" y="515" font-family="system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="600" fill="#7a604d">${cite}</text>
-      <text x="1030" y="515" font-family="system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="700" fill="#c2410c" text-anchor="end">sandovaldavid.github.io/dog-age-web</text>
+      <text x="1030" y="515" font-family="system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" font-size="13" font-weight="700" fill="#c2410c" text-anchor="end">dog-age.sandovaldavid.com</text>
     </svg>
     `;
   }

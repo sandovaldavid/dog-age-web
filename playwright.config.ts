@@ -10,7 +10,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'list',
   use: {
-    baseURL: 'http://127.0.0.1:4399/dog-age-web/',
+    baseURL: 'http://127.0.0.1:4399/',
     trace: 'on-first-retry',
   },
   projects: [
@@ -33,7 +33,7 @@ export default defineConfig({
 
   webServer: {
     command: 'npx astro preview --port 4399 --host 127.0.0.1',
-    url: 'http://127.0.0.1:4399/dog-age-web/',
+    url: 'http://127.0.0.1:4399/',
     reuseExistingServer: !process.env.CI,
     timeout: 15000,
   },
