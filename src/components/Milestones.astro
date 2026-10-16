@@ -1,6 +1,6 @@
 ---
 import { getCopy, type Language } from '@/i18n/ui';
-import { formatHumanYears, humanAge } from '@/lib/dogAge';
+import { formatHumanYears, humanAge, traditionalAge } from '@/lib/dogAge';
 
 type Props = { lang: Language };
 
@@ -9,30 +9,124 @@ const c = getCopy(lang);
 
 const DOG_AGES = [0.15, 1, 2, 4, 7, 12, 16] as const;
 const rows = DOG_AGES.map((age, i) => ({
+  age,
   label: c.milestoneLabels[i],
-  human: formatHumanYears(humanAge(age)),
+  human: formatHumanYears(humanAge(age), lang),
+  linear: formatHumanYears(traditionalAge(age), lang),
 }));
 ---
 
-<section aria-labelledby="milestones-heading">
+<section class="milestones-section" aria-labelledby="milestones-heading">
   <h2 id="milestones-heading">{c.milestonesHeading}</h2>
-  <p>{c.milestonesLead}</p>
-  <table>
-    <thead>
-      <tr>
-        <th scope="col">{c.tableColDog}</th>
-        <th scope="col">{c.tableColHuman}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {
-        rows.map((row) => (
-          <tr>
-            <th scope="row">{row.label}</th>
-            <td>~{row.human}</td>
-          </tr>
-        ))
-      }
-    </tbody>
-  </table>
+  <p class="milestones-lead">{c.milestonesLead}</p>
+
+  <div class="table-container" tabindex="0" aria-label={c.milestonesHeading}>
+    <table class="milestones-table">
+
+      <thead>
+        <tr>
+          <th scope="col">{c.tableColDog}</th>
+          <th scope="col">{c.tableColEpigenetic}</th>
+          <th scope="col" class="linear-col">{c.tableColLinear}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          rows.map((row) => (
+            <tr data-milestone-age={row.age}>
+              <th scope="row">{row.label}</th>
+              <td class="epigenetic-val">~{row.human}</td>
+              <td class="linear-val">{row.linear}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="milestones-footnote">{c.milestonesFootnote}</p>
 </section>
+
+<style>
+  .milestones-section {
+    margin-block: 2.5rem;
+  }
+
+  .milestones-lead {
+    margin-bottom: 1.25rem;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 1rem;
+    border: 1px solid var(--border);
+    background: var(--card);
+    box-shadow: 0 2px 12px rgb(61 44 30 / 0.05);
+  }
+
+  .table-container:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  thead th {
+    background: var(--accent-soft);
+    font-weight: 700;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody th[scope='row'] {
+    font-weight: 500;
+    color: var(--muted);
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tbody td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .epigenetic-val {
+    font-weight: 700;
+    color: var(--accent-text);
+  }
+
+  .linear-val {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  tbody tr:last-child th,
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr.highlight {
+    background: color-mix(in srgb, var(--accent-soft) 85%, transparent);
+  }
+
+  tbody tr.highlight th {
+    font-weight: 700;
+    color: var(--fg);
+  }
+
+  tbody tr.highlight .epigenetic-val {
+    color: var(--accent);
+  }
+
+  .milestones-footnote {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+  }
+</style>
+

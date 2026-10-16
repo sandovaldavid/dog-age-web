@@ -8,10 +8,15 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --passWithNoTests src",
+    "test:e2e": "playwright test"
   },
+
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.5",
     "astro": "^5.0.0",
     "typescript": "^5.5.0",
     "vitest": "^3.0.0"

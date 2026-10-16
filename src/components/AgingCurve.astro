@@ -1,0 +1,340 @@
+---
+import { getCopy, type Language } from '@/i18n/ui';
+import { humanAge } from '@/lib/dogAge';
+
+
+type Props = { lang: Language };
+
+const { lang } = Astro.props;
+const c = getCopy(lang);
+
+// SVG coordinate mapping
+// ViewBox: 0 0 640 320
+const W = 640;
+const H = 320;
+const padLeft = 45;
+const padRight = 35;
+const padTop = 30;
+const padBottom = 40;
+const plotW = W - padLeft - padRight;
+const plotH = H - padTop - padBottom;
+
+const xMin = 0;
+const xMax = 18; // dog years
+const yMin = 0;
+const yMax = 120; // human years
+
+const scaleX = (val: number) => padLeft + ((val - xMin) / (xMax - xMin)) * plotW;
+const scaleY = (val: number) => padTop + plotH - ((val - yMin) / (yMax - yMin)) * plotH;
+
+// Generate Epigenetic curve points (samples from 0.15 to 18)
+const sampleAges = [
+  0.15, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
+];
+const epiPoints = sampleAges.map((d) => `${scaleX(d).toFixed(1)},${scaleY(humanAge(d)).toFixed(1)}`);
+const epiPath = `M ${epiPoints.join(' L ')}`;
+
+// Generate Linear line points: y = 7x from 0 to 17.14 (y=120)
+const linearEndDog = 120 / 7;
+const linearPath = `M ${scaleX(0).toFixed(1)},${scaleY(0).toFixed(1)} L ${scaleX(linearEndDog).toFixed(1)},${scaleY(120).toFixed(1)}`;
+
+// Grid lines
+const xTicks = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18];
+const yTicks = [0, 25, 50, 75, 100, 120];
+
+// Beyond study region: dog years 16 to 18
+const studyLimitX = scaleX(16);
+const studyLimitW = scaleX(18) - studyLimitX;
+---
+
+<div class="aging-curve-container" aria-hidden="false">
+  <h3 class="curve-title">{c.comparisonTitle}</h3>
+  
+  <div class="chart-wrapper">
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      class="aging-curve-svg"
+      role="img"
+      aria-label={c.comparisonAriaLabel}
+      data-scale-x-min={xMin}
+      data-scale-x-max={xMax}
+      data-scale-y-min={yMin}
+      data-scale-y-max={yMax}
+      data-plot-left={padLeft}
+      data-plot-top={padTop}
+      data-plot-w={plotW}
+      data-plot-h={plotH}
+    >
+      <title>{c.comparisonTitle}</title>
+      <desc>{c.comparisonAriaLabel}</desc>
+
+      <defs>
+        <pattern id="study-hatch" width="8" height="8" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="0" y2="8" stroke="currentColor" stroke-width="1" class="hatch-line" />
+        </pattern>
+      </defs>
+
+      <!-- Beyond study shaded area (> 16 years) -->
+      <rect
+        x={studyLimitX}
+        y={padTop}
+        width={studyLimitW}
+        height={plotH}
+        fill="url(#study-hatch)"
+        class="beyond-study-rect"
+      />
+      <line
+        x1={studyLimitX}
+        y1={padTop}
+        x2={studyLimitX}
+        y2={padTop + plotH}
+        stroke="var(--border)"
+        stroke-dasharray="3 3"
+      />
+
+      <!-- Grid and Axis Ticks -->
+      {
+        yTicks.map((y) => (
+          <g class="grid-line-group">
+            <line
+              x1={padLeft}
+              y1={scaleY(y)}
+              x2={padLeft + plotW}
+              y2={scaleY(y)}
+              stroke="var(--border)"
+              stroke-opacity="0.5"
+            />
+            <text x={padLeft - 8} y={scaleY(y) + 4} text-anchor="end" class="tick-label">
+              {y}
+            </text>
+          </g>
+        ))
+      }
+
+      {
+        xTicks.map((x) => (
+          <g class="grid-line-group">
+            <line
+              x1={scaleX(x)}
+              y1={padTop}
+              x2={scaleX(x)}
+              y2={padTop + plotH}
+              stroke="var(--border)"
+              stroke-opacity="0.3"
+            />
+            <text x={scaleX(x)} y={padTop + plotH + 18} text-anchor="middle" class="tick-label">
+              {x}
+            </text>
+          </g>
+        ))
+      }
+
+      <!-- Axis Labels -->
+      <text
+        x={padLeft + plotW / 2}
+        y={H - 5}
+        text-anchor="middle"
+        class="axis-title"
+      >
+        {c.tableColDog} ({c.labelYears.toLowerCase()})
+      </text>
+
+      <text
+        transform={`rotate(-90) translate(-${padTop + plotH / 2}, 14)`}
+        text-anchor="middle"
+        class="axis-title"
+      >
+        {c.resultUnit}
+      </text>
+
+      <!-- Traditional Linear Line: y = 7x -->
+      <path
+        d={linearPath}
+        fill="none"
+        stroke="var(--muted)"
+        stroke-width="2.5"
+        stroke-dasharray="6 4"
+        class="linear-line"
+      />
+
+      <!-- Epigenetic Logarithmic Curve: Wang et al. 2020 -->
+      <path
+        d={epiPath}
+        fill="none"
+        stroke="var(--accent)"
+        stroke-width="3.5"
+        stroke-linecap="round"
+        class="epigenetic-line"
+      />
+
+      <!-- Dynamic Marker for user's dog -->
+      <g class="user-marker" style="display: none;">
+        <circle cx="0" cy="0" r="7" class="user-marker-pulse" />
+
+        <circle cx="0" cy="0" r="5" class="user-marker-dot" />
+        <g class="user-marker-tooltip">
+          <rect x="-35" y="-30" width="70" height="22" rx="4" class="tooltip-box" />
+          <text x="0" y="-15" text-anchor="middle" class="tooltip-text">
+            {c.curveYourDog}
+          </text>
+        </g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Legend -->
+  <div class="curve-legend" aria-hidden="true">
+    <div class="legend-item">
+      <span class="legend-swatch epigenetic-swatch"></span>
+      <span class="legend-label">{c.curveLegendEpigenetic}</span>
+    </div>
+    <div class="legend-item">
+      <span class="legend-swatch linear-swatch"></span>
+      <span class="legend-label">{c.curveLegendLinear}</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .aging-curve-container {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    margin-block: 2rem;
+    box-shadow: 0 2px 12px rgb(61 44 30 / 0.05);
+  }
+
+  .curve-title {
+    margin: 0 0 1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  .chart-wrapper {
+    width: 100%;
+    position: relative;
+  }
+
+  .aging-curve-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+
+  .tick-label {
+    font-size: 10px;
+    fill: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .axis-title {
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--muted);
+  }
+
+  .hatch-line {
+    stroke: var(--warn-fg);
+    opacity: 0.25;
+  }
+
+  .beyond-study-rect {
+    color: var(--warn-fg);
+    opacity: 0.4;
+  }
+
+  .epigenetic-line {
+    transition: stroke-dashoffset 300ms ease;
+  }
+
+  .linear-line {
+    opacity: 0.75;
+  }
+
+  .user-marker {
+    transition: transform 180ms ease-out;
+  }
+
+  .user-marker-pulse {
+    fill: var(--accent);
+    opacity: 0.35;
+    animation: marker-pulse 2s infinite ease-in-out;
+  }
+
+  @keyframes marker-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.35;
+    }
+    50% {
+      transform: scale(1.6);
+      opacity: 0.1;
+    }
+  }
+
+  .user-marker-dot {
+    fill: var(--accent);
+    stroke: var(--card);
+    stroke-width: 2;
+  }
+
+  .tooltip-box {
+    fill: var(--fg);
+    opacity: 0.9;
+  }
+
+  .tooltip-text {
+    fill: var(--bg);
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .curve-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .legend-swatch {
+    display: inline-block;
+    width: 1.5rem;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  .epigenetic-swatch {
+    background: var(--accent);
+    height: 4px;
+  }
+
+  .linear-swatch {
+    background: var(--muted);
+    border-bottom: 2px dashed var(--muted);
+    height: 0;
+  }
+
+  .legend-label {
+    color: var(--muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .user-marker-pulse {
+      animation: none;
+    }
+    .user-marker {
+      transition: none;
+    }
+  }
+</style>
