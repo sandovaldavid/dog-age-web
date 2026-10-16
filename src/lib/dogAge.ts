@@ -19,10 +19,14 @@ export function lifeStage(humanYears: number): LifeStage {
   return 'senior';
 }
 
-export function formatHumanYears(humanYears: number): string {
-  return humanYears < 10
-    ? (Math.round(humanYears * 10) / 10).toFixed(1)
-    : String(Math.round(humanYears));
+export function formatHumanYears(humanYears: number, locale: string = 'en'): string {
+  const rounded = humanYears < 10
+    ? Math.round(humanYears * 10) / 10
+    : Math.round(humanYears);
+  return new Intl.NumberFormat(locale === 'es' ? 'es-ES' : 'en-US', {
+    minimumFractionDigits: humanYears < 10 ? 1 : 0,
+    maximumFractionDigits: humanYears < 10 ? 1 : 0,
+  }).format(rounded);
 }
 
 export type CalcError = 'errorEmpty' | 'errorInvalid' | 'errorTooYoung';
@@ -31,6 +35,24 @@ export type CalcResult =
   | { ok: true; dogYears: number; humanYears: number; beyondStudyRange: boolean }
   | { ok: false; error: CalcError };
 
+export function traditionalAge(dogYears: number): number {
+  return dogYears * 7;
+}
+
+export function findClosestMilestoneIndex(dogYears: number, milestones: readonly number[]): number {
+  if (milestones.length === 0) return -1;
+  let closestIndex = 0;
+  let minDiff = Math.abs(dogYears - milestones[0]);
+  for (let i = 1; i < milestones.length; i++) {
+    const diff = Math.abs(dogYears - milestones[i]);
+    if (diff < minDiff) {
+      minDiff = diff;
+      closestIndex = i;
+    }
+  }
+  return closestIndex;
+}
+
 function parseField(raw: string | null, max: number): number | 'invalid' {
   if (raw === null || raw.trim() === '') return 0;
   const n = Number(raw);
@@ -38,7 +60,12 @@ function parseField(raw: string | null, max: number): number | 'invalid' {
   return n;
 }
 
-export function calcDogAge(yearsRaw: string | null, monthsRaw: string | null): CalcResult {
+export function calcDogAge(
+  yearsRaw: string | null,
+  monthsRaw: string | null,
+  options?: { badInput?: boolean }
+): CalcResult {
+  if (options?.badInput) return { ok: false, error: 'errorInvalid' };
   const yearsBlank = yearsRaw === null || yearsRaw.trim() === '';
   const monthsBlank = monthsRaw === null || monthsRaw.trim() === '';
   if (yearsBlank && monthsBlank) return { ok: false, error: 'errorEmpty' };
@@ -50,3 +77,4 @@ export function calcDogAge(yearsRaw: string | null, monthsRaw: string | null): C
   const humanYears = humanAge(dogYears);
   return { ok: true, dogYears, humanYears, beyondStudyRange: dogYears > MAX_STUDY_YEARS };
 }
+

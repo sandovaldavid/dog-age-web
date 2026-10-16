@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { MAX_STUDY_YEARS, MIN_DOG_YEARS, calcDogAge, formatHumanYears, humanAge, lifeStage } from './dogAge';
+import {
+  MAX_STUDY_YEARS,
+  MIN_DOG_YEARS,
+  calcDogAge,
+  findClosestMilestoneIndex,
+  formatHumanYears,
+  humanAge,
+  lifeStage,
+  traditionalAge,
+} from './dogAge';
+
 
 describe('humanAge', () => {
   it.each([
@@ -84,4 +94,35 @@ describe('formatHumanYears', () => {
     expect(formatHumanYears(42.09)).toBe('42');
     expect(formatHumanYears(75.36)).toBe('75');
   });
+
+  it('uses comma as decimal separator for Spanish locale', () => {
+    expect(formatHumanYears(0.65, 'es')).toBe('0,7');
+    expect(formatHumanYears(2.33, 'es')).toBe('2,3');
+    expect(formatHumanYears(42.09, 'es')).toBe('42');
+  });
 });
+
+describe('calcDogAge with badInput', () => {
+  it('reports errorInvalid when input element signals badInput', () => {
+    expect(calcDogAge('', '', { badInput: true })).toEqual({ ok: false, error: 'errorInvalid' });
+    expect(calcDogAge('2', '', { badInput: true })).toEqual({ ok: false, error: 'errorInvalid' });
+  });
+});
+
+describe('traditionalAge and milestone matching', () => {
+  it('calculates 7x age', () => {
+    expect(traditionalAge(1)).toBe(7);
+    expect(traditionalAge(2)).toBe(14);
+    expect(traditionalAge(10.5)).toBe(73.5);
+  });
+
+  it('finds closest milestone index', () => {
+    const milestones = [0.15, 1, 2, 4, 7, 12, 16];
+    expect(findClosestMilestoneIndex(0.2, milestones)).toBe(0);
+    expect(findClosestMilestoneIndex(1.2, milestones)).toBe(1);
+    expect(findClosestMilestoneIndex(5.6, milestones)).toBe(4); // closer to 7 than 4
+    expect(findClosestMilestoneIndex(15, milestones)).toBe(6);
+    expect(findClosestMilestoneIndex(10, [])).toBe(-1);
+  });
+});
+
